@@ -18,11 +18,11 @@ Gem::Specification.new do |spec|
   spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
   spec.require_paths = ["lib"]
 
-  spec.add_dependency('activerecord',  spec.version)
-  spec.add_dependency('activemodel',   spec.version)
-  spec.add_dependency('activesupport', spec.version)
-  spec.add_dependency('actionpack',    spec.version)
-  spec.add_dependency('railties',      spec.version)
+  spec.add_dependency('activerecord',  ActiveModel::Caution::RAILS_VERSION)
+  spec.add_dependency('activemodel',   ActiveModel::Caution::RAILS_VERSION)
+  spec.add_dependency('activesupport', ActiveModel::Caution::RAILS_VERSION)
+  spec.add_dependency('actionpack',    ActiveModel::Caution::RAILS_VERSION)
+  spec.add_dependency('railties',      ActiveModel::Caution::RAILS_VERSION)
 
   spec.add_development_dependency "bundler", "~> 1.3"
   spec.add_development_dependency "rake"

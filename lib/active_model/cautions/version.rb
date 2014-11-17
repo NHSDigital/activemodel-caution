@@ -1,6 +1,8 @@
 module ActiveModel
   module Caution
-    # Mirror the ActiveModel version:
-    VERSION = '3.2.18'
+    RAILS_VERSION = '3.2.18'
+
+    # Gem version:
+    VERISON = '1.0.0'
   end
 end

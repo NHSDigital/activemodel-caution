@@ -1,0 +1,14 @@
+=== Warnings for ActiveModel
+
+The activemodel-caution gem mirrors ActiveModel's validation framework to provide non-blocking warnings.
+It is possible to specify a warning as 'active', in which case it must be confirmed (otherwise a
+validation error is raised).
+
+== Installation / Usage
+
+To build a new version of the gem:
+* Ensure that you have updated `VERSION` and/or `RAILS_VERSION` in lib/active_model/cautions/version.rb;
+* Run `gem build activemodel-caution.gemspec` to create a .gem file;
+* Run `gem install ./activemodel-caution-x.y.z.gem` to install the .gem you just built.
+
+You can then use `bundle install` as usual, and it will find the installed gem.
