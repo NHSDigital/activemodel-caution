@@ -6,6 +6,9 @@ require 'active_record'
 
 require File.dirname(__FILE__) + '/../lib/activemodel-caution'
 
+# I can't get the railtie working in testing...
+ActiveModel::Caution::Railtie.insert
+
 ActiveRecord::Base.establish_connection(:adapter => 'sqlite3', :database => ':memory:')
 
 ActiveRecord::Schema.define(:version => 0) do

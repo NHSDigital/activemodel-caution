@@ -3,6 +3,6 @@ module ActiveModel
     RAILS_VERSION = '3.2.18'
 
     # Gem version:
-    VERSION = '1.0.0'
+    VERSION = '1.0.1'
   end
 end
