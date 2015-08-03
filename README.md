@@ -91,7 +91,19 @@ The object must then be "confirmed as safe" to be valid:
 @post.safe?   #=> false
 ```
 
-## Testing
+## Development
+
+### Contributing
+
+1. Fork it ( https://github.com/PublicHealthEngland/activemodel-caution/fork )
+2. Create your feature branch (git checkout -b my-new-feature)
+3. Commit your changes (git commit -am 'Add some feature')
+4. Push to the branch (git push origin my-new-feature)
+5. Create a new Pull Request
+
+Please note that this project is released with a Contributor Code of Conduct. By participating in this project you agree to abide by its terms.
+
+### Testing
 
 Development dependencies can be installed using bundler in the usual way.
 Tests can be run with
