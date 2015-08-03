@@ -7,8 +7,8 @@ require 'active_model/cautions/version'
 Gem::Specification.new do |spec|
   spec.name          = "activemodel-caution"
   spec.version       = ActiveModel::Caution::VERSION
-  spec.authors       = ["Josh Pencheon"]
-  spec.email         = ["josh.pencheon@ecric.nhs.uk"]
+  spec.authors       = ['NCRS Development Team']
+  spec.email         = []
   spec.description   = "Adds cautioning to ActiveModel"
   spec.summary       = "Warnings are non-enforced validations, and otherwise work in the same way."
   spec.homepage      = ""
