@@ -1,0 +1,32 @@
+AllCops:
+  Exclude:
+  - gemfiles/vendor/**/*
+  - test/dummy/db/schema.rb
+  - vendor/**/*
+
+Rails:
+  Enabled: true
+
+# Multi-line method chaining should be done with trailing dots.
+Style/DotPosition:
+  EnforcedStyle: trailing
+
+# Override HoundCI's preference for double quotes:
+Style/StringLiterals:
+  EnforcedStyle: single_quotes
+
+# This is unenforceable on Rails 3.x.
+Rails/ActionFilter:
+  Enabled: false
+
+# ...
+LineLength:
+  Max: 99
+
+# Relax some of the cops for tests
+Metrics/ClassLength:
+  Exclude:
+    - test/**/*.rb
+Metrics/MethodLength:
+  Exclude:
+    - test/**/*.rb

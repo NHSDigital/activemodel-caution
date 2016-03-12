@@ -2,7 +2,7 @@ require 'bundler/gem_tasks'
 require 'rake/testtask'
 
 desc 'Default: run unit tests.'
-task :default => :test
+task default: :test
 
 desc 'Test the activemodel_caution plugin.'
 Rake::TestTask.new(:test) do |t|
