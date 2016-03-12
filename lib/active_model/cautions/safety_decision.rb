@@ -48,7 +48,7 @@ module ActiveModel
       # Did validations fail because the user
       # needs to confirm warnings have been read?
       def warnings_need_confirmation?
-        @_active_warnings_confirm_needed
+        @_active_warnings_confirm_needed ||= false
       end
 
       def warnings_need_confirmation!
@@ -57,7 +57,7 @@ module ActiveModel
       end
 
       def active_warnings_confirm_decision
-        @active_warnings_confirm_decision
+        @active_warnings_confirm_decision ||= false
       end
 
       def active_warnings_confirm_decision=(value)
