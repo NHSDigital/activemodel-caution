@@ -2,7 +2,7 @@ class TalkingPetError < StandardError; end
 
 class Pet < ActiveRecord::Base
 
-  attr_accessor :greeting
+  attr_accessor :greeting, :name
 
   before_cautions :learn_to_speak
 
@@ -11,6 +11,7 @@ class Pet < ActiveRecord::Base
   caution :warn_against_check_out_pet
 
   cautions_presence_of :greeting
+  cautions_format_of :name, without: /[0-9]/, message: "can't contain numbers"
 
   after_cautions :freak_out_if_pet_can_talk
 

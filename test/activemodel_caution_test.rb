@@ -86,6 +86,17 @@ class ActivemodelCautionTest < ActiveSupport::TestCase
     pet.safe?
     assert pet.warnings[:greeting].exclude?("can't be blank")
   end
+
+  test "pet with format caution" do
+    pet = Pet.new(name: 'K9')
+
+    pet.safe?
+    assert pet.warnings[:name].include?("can't contain numbers")
+
+    pet.name = 'Kay Nine'
+    pet.safe?
+    refute pet.warnings[:name].include?("can't contain numbers")
+  end
   
   test "pet with standard inactive warnings" do
     pet = Pet.create(:name => 'Ben', :birthdate => Date.today.next_month)
