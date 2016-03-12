@@ -1,5 +1,4 @@
 require 'rubygems'
-require 'test/unit'
 
 require 'rails'
 require 'active_record'
