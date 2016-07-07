@@ -1,8 +1,8 @@
 module ActiveModel
-  module Caution
-    class PresenceCautioner < EachCautioner
-      def caution(record)
-        record.warnings.add_on_blank(attributes, options)
+  module Cautions
+    class PresenceCautioner < EachCautioner # :nodoc:
+      def caution_each(record, attr_name, value)
+        record.warnings.add(attr_name, :blank, options) if value.blank?
       end
     end
 

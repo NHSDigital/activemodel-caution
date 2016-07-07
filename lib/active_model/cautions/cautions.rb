@@ -1,45 +1,53 @@
 require 'active_support/core_ext/hash/slice'
 
 module ActiveModel
-
-  module Caution
+  module Cautions
     module ClassMethods
-
       def cautions(*attributes)
-        defaults = attributes.extract_options!
-        cautioners  = defaults.slice!(:if, :unless, :on, :allow_blank, :allow_nil)
+        defaults = attributes.extract_options!.dup
+        cautions = defaults.slice!(*_cautions_default_keys)
 
         raise ArgumentError, "You need to supply at least one attribute" if attributes.empty?
-        raise ArgumentError, "Attribute names must be symbols" if attributes.any?{ |attribute| !attribute.is_a?(Symbol) }
-        raise ArgumentError, "You need to supply at least one warning" if cautioners.empty?
+        raise ArgumentError, "You need to supply at least one caution" if cautions.empty?
 
-        defaults.merge!(:attributes => attributes)
+        defaults[:attributes] = attributes
 
-        cautioners.each do |key, options|
+        cautions.each do |key, options|
+          next unless options
+          key = "#{key.to_s.camelize}Cautioner"
+
           begin
-            cautioner = const_get("#{key.to_s.camelize}Cautioner")
+            cautioner = key.include?('::'.freeze) ? key.constantize : const_get(key)
           rescue NameError
-            raise ArgumentError, "Unknown cautioner: '#{key}' - not validations have been implemented as cautions yet."
+            raise ArgumentError, "Unknown cautioner: '#{key}'"
           end
 
           cautions_with(cautioner, defaults.merge(_parse_cautions_options(options)))
         end
       end
 
+      def cautions!(*attributes)
+        options = attributes.extract_options!
+        options[:strict] = true
+        cautions(*(attributes << options))
+      end
+
     protected
 
-      def _parse_cautions_options(options) #:nodoc:
+      def _cautions_default_keys
+        [:if, :unless, :on, :allow_blank, :allow_nil , :strict]
+      end
+
+      def _parse_cautions_options(options)
         case options
         when TrueClass
           {}
         when Hash
           options
-        when Regexp
-          { :with => options }
         when Range, Array
-          { :in => options }
+          { in: options }
         else
-          raise ArgumentError, "#{options.inspect} is an invalid option. Expecting true, Hash, Regexp, Range, or Array"
+          { with: options }
         end
       end
     end

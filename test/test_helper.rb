@@ -3,6 +3,8 @@ require 'rubygems'
 require 'rails'
 require 'active_record'
 
+require 'rails/test_help'
+
 require File.dirname(__FILE__) + '/../lib/activemodel-caution'
 
 # I can't get the railtie working in testing...

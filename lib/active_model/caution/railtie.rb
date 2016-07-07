@@ -7,12 +7,12 @@ module ActiveModel
         end
       end
     end
-    
+  
     class Railtie
       def self.insert
-        ActiveRecord::Base.send :include, ActiveModel::Caution
-        ActiveRecord::Base.send :include, ActiveModel::Caution::Callbacks
-        ActiveRecord::Base.send :include, ActiveModel::Caution::SafetyDecision
+        ActiveRecord::Base.include(ActiveModel::Cautions)
+        ActiveRecord::Base.include(ActiveModel::Cautions::Callbacks)
+        ActiveRecord::Base.include(ActiveModel::Cautions::SafetyDecision)
       end
     end
   end

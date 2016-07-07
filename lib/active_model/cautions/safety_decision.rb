@@ -1,5 +1,5 @@
 module ActiveModel
-  module Caution
+  module Cautions
     module SafetyDecision
       extend ActiveSupport::Concern
 
@@ -10,6 +10,7 @@ module ActiveModel
         # Validations can add warnings too, start with a
         # clean slate. We preserve those warnings when
         # checking for active cautions.
+        return super unless respond_to?(:warnings)
 
         warnings.clear
         super && no_unconfirmed_active_cautions?

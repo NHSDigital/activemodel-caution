@@ -1,51 +1,53 @@
+require "active_support/core_ext/module/anonymous"
+
 module ActiveModel
   class Cautioner
     attr_reader :options
 
     def self.kind
-      @kind ||= name.split('::').last.underscore.sub(/_validator$/, '').to_sym unless anonymous?
+      @kind ||= name.split('::').last.underscore.chomp('_caution').to_sym unless anonymous?
     end
 
-    def initialize(options)
-      @options = options.freeze
+    def initialize(options = {})
+      @options  = options.except(:class).freeze
     end
 
     def kind
       self.class.kind
     end
 
-    def validate(record)
-      raise NotImplementedError
+    def caution(record)
+      raise NotImplementedError, "Subclasses must implement a caution(record) method."
     end
   end
 
-  class EachCautioner < Cautioner
+  class EachCautioner < Cautioner #:nodoc:
     attr_reader :attributes
 
     def initialize(options)
-      @attributes = Array.wrap(options.delete(:attributes))
-      raise ":attributes cannot be blank" if @attributes.empty?
+      @attributes = Array(options.delete(:attributes))
+      raise ArgumentError, ":attributes cannot be blank" if @attributes.empty?
       super
-      check_safety!
+      check_validity!
     end
 
     def caution(record)
       attributes.each do |attribute|
-        value = record.read_attribute_for_cautioning(attribute, options)
+        value = record.read_attribute_for_cautioning(attribute)
         next if (value.nil? && options[:allow_nil]) || (value.blank? && options[:allow_blank])
         caution_each(record, attribute, value)
       end
     end
 
     def caution_each(record, attribute, value)
-      raise NotImplementedError
+      raise NotImplementedError, "Subclasses must implement a caution_each(record, attribute, value) method"
     end
 
-    def check_safety!
+    def check_validity!
     end
   end
 
-  class BlockCautioner < EachCautioner
+  class BlockCautioner < EachCautioner #:nodoc:
     def initialize(options, &block)
       @block = block
       super

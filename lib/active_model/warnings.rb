@@ -1,138 +1,156 @@
-# -*- coding: utf-8 -*-
-# Modified active_model/.../errors.rb
-
-require 'active_support/core_ext/array/wrap'
 require 'active_support/core_ext/array/conversions'
 require 'active_support/core_ext/string/inflections'
-require 'active_support/core_ext/object/blank'
-require 'active_support/core_ext/hash/reverse_merge'
-require 'active_support/ordered_hash'
+require 'active_support/core_ext/object/deep_dup'
+require 'active_support/core_ext/string/filters'
 
 module ActiveModel
   class Warnings
     include Enumerable
 
-    CALLBACKS_OPTIONS = [:if, :unless, :on, :allow_nil, :allow_blank]
+    CALLBACKS_OPTIONS = [:if, :unless, :on, :allow_nil, :allow_blank, :strict]
+    MESSAGE_OPTIONS = [:message]
 
-    attr_reader :messages, :active
+    attr_reader :messages, :details
+    attr_reader :active
 
     def initialize(base)
       @base     = base
-      @messages = ActiveSupport::OrderedHash.new
-      @active   = ActiveSupport::OrderedHash.new
+      @messages = apply_default_array({})
+      @details  = apply_default_array({})
+      @active   = apply_default_array({})
     end
 
-    def initialize_dup(other)
+    def initialize_dup(other) # :nodoc:
       @messages = other.messages.dup
+      @details  = other.details.deep_dup
+      @active   = other.active.deep_dup
+      super
+    end
+
+    def copy!(other) # :nodoc:
+      @messages = other.messages.dup
+      @details  = other.details.dup
       @active   = other.active.dup
     end
 
-    # Backport dup from 1.9 so that #initialize_dup gets called
-    unless Object.respond_to?(:initialize_dup)
-      def dup # :nodoc:
-        copy = super
-        copy.initialize_dup(self)
-        copy
-      end
-    end
-
-    # Clear the messages
     def clear
       messages.clear
+      details.clear
       active.clear
     end
 
-    def include?(warning)
-      (v = messages[warning]) && v.any?
+    def include?(attribute)
+      messages.key?(attribute) && messages[attribute].present?
     end
+    alias :has_key? :include?
+    alias :key? :include?
 
-    # Get messages for +key+
     def get(key)
+      ActiveSupport::Deprecation.warn(<<-MESSAGE.squish)
+        ActiveModel::Warnings#get is deprecated and will be removed in activemodel-caution 5.1.
+
+        To achieve the same use model.warnings[:#{key}].
+      MESSAGE
+
       messages[key]
     end
 
-    # Set messages for +key+ to +value+
     def set(key, value)
+      ActiveSupport::Deprecation.warn(<<-MESSAGE.squish)
+        ActiveModel::Warnings#set is deprecated and will be removed in activemodel-caution 5.1.
+
+        Use model.warnings.add(:#{key}, #{value.inspect}) instead.
+      MESSAGE
+
       messages[key] = value
     end
 
-    # Delete messages for +key+
     def delete(key)
+      active.delete(key)
+      details.delete(key)
       messages.delete(key)
     end
 
     def [](attribute)
-      get(attribute.to_sym) || set(attribute.to_sym, [])
+      messages[attribute.to_sym]
     end
 
     def []=(attribute, warning)
-      self[attribute] << warning
+      ActiveSupport::Deprecation.warn(<<-MESSAGE.squish)
+        ActiveModel::Warnings#[]= is deprecated and will be removed in activemodel-caution 5.1.
+
+        Use model.warnings.add(:#{attribute}, #{warning.inspect}) instead.
+      MESSAGE
+
+      messages[attribute.to_sym] << warning
     end
 
     def each
       messages.each_key do |attribute|
-        self[attribute].each { |warning| yield attribute, warning }
+        messages[attribute].each { |warning| yield attribute, warning }
       end
     end
 
     def size
       values.flatten.size
     end
+    alias :count :size
 
-    # Returns all message values
     def values
       messages.values
     end
 
-    # Returns all message keys
     def keys
       messages.keys
     end
 
-    def to_a
-      full_messages
-    end
-
-    def count
-      to_a.size
-    end
-
-    # Returns true if no errors are found, false otherwise.
     def empty?
-      all? { |k, v| v && v.empty? }
+      size.zero?
     end
-    alias_method :blank?, :empty?
+    alias :blank? :empty?
 
     def to_xml(options={})
-      to_a.to_xml options.reverse_merge(:root => "warnings", :skip_types => true)
+      to_a.to_xml({ root: "warnings", skip_types: true }.merge!(options))
     end
 
     def as_json(options=nil)
-      to_hash
+      to_hash(options && options[:full_messages])
     end
 
-    def to_hash
-      messages.dup
+    def to_hash(full_messages = false)
+      if full_messages
+        self.messages.each_with_object({}) do |(attribute, array), messages|
+          messages[attribute] = array.map { |message| full_message(attribute, message) }
+        end
+      else
+        self.messages.dup
+      end
     end
 
-    def add(attribute, message = nil, options = {})
-      message ||= :invalid
-
-      if message.is_a?(Symbol)
-        message = generate_message(attribute, message, options.except(*CALLBACKS_OPTIONS))
-      elsif message.is_a?(Proc)
-        message = message.call
+    def add(attribute, message = :invalid, options = {})
+      message = message.call if message.respond_to?(:call)
+      detail  = normalize_detail(message, options)
+      message = normalize_message(attribute, message, options)
+      if exception = options[:strict]
+        exception = ActiveModel::StrictValidationFailed if exception == true
+        raise exception, full_message(attribute, message)
       end
 
-      if options[:active]
-        (@active[attribute.to_sym] ||= []) << message
-      end
-
-      self[attribute] << message
+      active[attribute.to_sym]   << message if options[:active]
+      details[attribute.to_sym]  << detail
+      messages[attribute.to_sym] << message
     end
 
     def add_on_empty(attributes, options = {})
-      [attributes].flatten.each do |attribute|
+      ActiveSupport::Deprecation.warn(<<-MESSAGE.squish)
+        ActiveModel::Warnings#add_on_empty is deprecated and will be removed in activemodel-caution 5.1.
+
+        To achieve the same use:
+
+          warnings.add(attribute, :empty, options) if value.nil? || value.empty?
+      MESSAGE
+
+      Array(attributes).each do |attribute|
         value = @base.send(:read_attribute_for_cautioning, attribute)
         is_empty = value.respond_to?(:empty?) ? value.empty? : false
         add(attribute, :empty, options) if value.nil? || is_empty
@@ -140,75 +158,75 @@ module ActiveModel
     end
 
     def add_on_blank(attributes, options = {})
-      [attributes].flatten.each do |attribute|
+      ActiveSupport::Deprecation.warn(<<-MESSAGE.squish)
+        ActiveModel::Warnings#add_on_blank is deprecated and will be removed in activemodel-caution 5.1.
+
+        To achieve the same use:
+
+          warnings.add(attribute, :empty, options) if value.blank?
+      MESSAGE
+
+      Array(attributes).each do |attribute|
         value = @base.send(:read_attribute_for_cautioning, attribute)
         add(attribute, :blank, options) if value.blank?
       end
     end
 
-    def passive
-      passive = {}
-
-      @messages.each do |attribute, attr_messages|
-        active = (@active[attribute] || []) & attr_messages
-        others = attr_messages - active
-
-        passive[attribute] = others if others.any?
-      end
-
-      passive
+    def added?(attribute, message = :invalid, options = {})
+      message = message.call if message.respond_to?(:call)
+      message = normalize_message(attribute, message, options)
+      self[attribute].include? message
     end
 
-    def full_messages
-      map { |attribute, message|
-        if attribute == :base
-          message
-        else
-          attr_name = attribute.to_s.gsub('.', '_').humanize
-          attr_name = @base.class.human_attribute_name(attribute, :default => attr_name)
-
-          I18n.t(:"warnings.format", {
-            :default   => "%{attribute} %{message}",
-            :attribute => attr_name,
-            :message   => message
-          })
-        end
-      }
+    def passive
+      @messages.each_with_object({}) do |(attribute, message), passive|
+        passive[attribute] = message unless @active.key?(attribute)
+      end
     end
 
     def active_messages
-      msgs = []
+      messages = []
 
-      @active.each do |attribute, messages|
-        messages.each do |message|
-          if attribute == :base
-            message
-          else
-            attr_name = attribute.to_s.gsub('.', '_').humanize
-            attr_name = @base.class.human_attribute_name(attribute, :default => attr_name)
-
-            msgs << I18n.t(:"warnings.format", {
-              :default   => "%{attribute} %{message}",
-              :attribute => attr_name,
-              :message   => message
-            })
-          end
-        end
+      @active.each_key do |attribute|
+        @active[attribute].each { |warning| messages << full_message(attribute, warning ) }
       end
 
-      msgs
+      messages
+    end
+
+    def full_messages
+      map { |attribute, message| full_message(attribute, message) }
+    end
+    alias :to_a :full_messages
+
+    def full_messages_for(attribute)
+      messages[attribute].map { |message| full_message(attribute, message) }
+    end
+
+    def full_message(attribute, message)
+      return message if attribute == :base
+      attr_name = attribute.to_s.tr('.', '_').humanize
+      attr_name = @base.class.human_attribute_name(attribute, default: attr_name)
+      I18n.t(:"warnings.format", {
+        default:  "%{attribute} %{message}",
+        attribute: attr_name,
+        message:   message
+      })
     end
 
     def generate_message(attribute, type = :invalid, options = {})
       type = options.delete(:message) if options[:message].is_a?(Symbol)
 
-      defaults = @base.class.lookup_ancestors.map do |klass|
-        [ :"#{@base.class.i18n_scope}.warnings.models.#{klass.model_name.i18n_key}.attributes.#{attribute}.#{type}",
-          :"#{@base.class.i18n_scope}.warnings.models.#{klass.model_name.i18n_key}.#{type}" ]
+      if @base.class.respond_to?(:i18n_scope)
+        defaults = @base.class.lookup_ancestors.map do |klass|
+          [ :"#{@base.class.i18n_scope}.warnings.models.#{klass.model_name.i18n_key}.attributes.#{attribute}.#{type}",
+            :"#{@base.class.i18n_scope}.warnings.models.#{klass.model_name.i18n_key}.#{type}" ]
+        end
+      else
+        defaults = []
       end
 
-      defaults << options.delete(:message)
-      defaults << :"#{@base.class.i18n_scope}.warnings.messages.#{type}"
+      defaults << :"#{@base.class.i18n_scope}.warnings.messages.#{type}" if @base.class.respond_to?(:i18n_scope)
       defaults << :"warnings.attributes.#{attribute}.#{type}"
       defaults << :"warnings.messages.#{type}"
 
@@ -216,16 +234,70 @@ module ActiveModel
       defaults.flatten!
 
       key = defaults.shift
+      defaults = options.delete(:message) if options[:message]
       value = (attribute != :base ? @base.send(:read_attribute_for_cautioning, attribute) : nil)
 
       options = {
-        :default => defaults,
-        :model => @base.class.model_name.human,
-        :attribute => @base.class.human_attribute_name(attribute),
-        :value => value
-      }.merge(options)
+        default: defaults,
+        model: @base.model_name.human,
+        attribute: @base.class.human_attribute_name(attribute),
+        value: value,
+        object: @base
+      }.merge!(options)
 
       I18n.translate(key, options)
+    end
+
+    def marshal_dump
+      [@base, without_default_proc(@messages), without_default_proc(@details), without_default_proc(@active)]
+    end
+
+    def marshal_load(array)
+      @base, @messages, @details, @active = array
+      apply_default_array(@messages)
+      apply_default_array(@details)
+      apply_default_array(@active)
+    end
+
+  private
+    def normalize_message(attribute, message, options)
+      case message
+      when Symbol
+        generate_message(attribute, message, options.except(*CALLBACKS_OPTIONS))
+      else
+        message
+      end
+    end
+
+    def normalize_detail(message, options)
+      { warning: message }.merge(options.except(*CALLBACKS_OPTIONS + MESSAGE_OPTIONS))
+    end
+
+    def without_default_proc(hash)
+      hash.dup.tap do |new_h|
+        new_h.default_proc = nil
+      end
+    end
+
+    def apply_default_array(hash)
+      hash.default_proc = proc { |h, key| h[key] = [] }
+      hash
+    end
+  end
+
+  class StrictValidationFailed < StandardError
+  end
+
+  class RangeError < ::RangeError
+  end
+
+  class UnknownAttributeError < NoMethodError
+    attr_reader :record, :attribute
+
+    def initialize(record, attribute)
+      @record = record
+      @attribute = attribute
+      super("unknown attribute '#{attribute}' for #{@record.class}.")
     end
   end
 end
