@@ -1,5 +1,5 @@
 class Person
-  include ActiveModel::Caution
+  include ActiveModel::Cautions
   
   attr_accessor :tel
   attr_accessor :age

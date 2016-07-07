@@ -135,7 +135,6 @@ class ActivemodelCautionTest < ActiveSupport::TestCase
     end
   end
 
-  # TODO - Enable this test once the functionality is re-enabled.
   test "active warnings should raise a validation error" do
     pet = Pet.create(:name => 'Ben', :birthdate => Date.today.next_month, :status => 'out')
     assert pet.unsafe?
@@ -148,7 +147,6 @@ class ActivemodelCautionTest < ActiveSupport::TestCase
     assert pet.warnings_need_confirmation?
   end
 
-  # TODO - Enable this test once the functionality is re-enabled.
   test "active warnings should not raise validation error once confirmed" do
     pet = Pet.create(:name => 'Ben', :status => 'out')
     assert pet.unsafe?
@@ -169,7 +167,6 @@ class ActivemodelCautionTest < ActiveSupport::TestCase
     assert pet.valid?  # But validation should pass
   end
 
-  # TODO - Enable this test once the functionality is re-enabled.
   test "active warnings should still be invalid without confirm" do
     pet = Pet.create(:name => 'Ben', :status => 'out')
     assert pet.unsafe?
@@ -217,5 +214,4 @@ class ActivemodelCautionTest < ActiveSupport::TestCase
     assert_equal({}, pet.warnings.active)
     assert_equal true, pet.warnings.empty?
   end
-
 end

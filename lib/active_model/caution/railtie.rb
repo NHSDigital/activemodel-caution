@@ -6,9 +6,7 @@ module ActiveModel
           ActiveModel::Caution::Railtie.insert
         end
       end
-    end
-  
-    class Railtie
+
       def self.insert
         ActiveRecord::Base.include(ActiveModel::Cautions)
         ActiveRecord::Base.include(ActiveModel::Cautions::Callbacks)

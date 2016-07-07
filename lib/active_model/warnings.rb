@@ -285,19 +285,19 @@ module ActiveModel
     end
   end
 
-  class StrictValidationFailed < StandardError
-  end
-
-  class RangeError < ::RangeError
-  end
-
-  class UnknownAttributeError < NoMethodError
-    attr_reader :record, :attribute
-
-    def initialize(record, attribute)
-      @record = record
-      @attribute = attribute
-      super("unknown attribute '#{attribute}' for #{@record.class}.")
-    end
-  end
+  # class StrictValidationFailed < StandardError
+  # end
+  #
+  # class RangeError < ::RangeError
+  # end
+  #
+  # class UnknownAttributeError < NoMethodError
+  #   attr_reader :record, :attribute
+  #
+  #   def initialize(record, attribute)
+  #     @record = record
+  #     @attribute = attribute
+  #     super("unknown attribute '#{attribute}' for #{@record.class}.")
+  #   end
+  # end
 end

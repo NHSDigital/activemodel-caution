@@ -22,6 +22,3 @@ end
 ActiveSupport.on_load(:i18n) do
   I18n.load_path << File.dirname(__FILE__) + '/active_model/locale/en.yml'
 end
-
-# require 'active_model/caution/version'
-# require 'active_model/caution/railtie' if defined?(Rails)
