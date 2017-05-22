@@ -28,5 +28,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rake'
   spec.add_development_dependency 'sqlite3'
   spec.add_development_dependency 'test-unit'
-  spec.add_development_dependency 'ndr_dev_support'
+  spec.add_development_dependency 'ndr_dev_support', '>= 2.1.1'
 end
