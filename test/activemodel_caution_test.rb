@@ -203,6 +203,16 @@ class ActivemodelCautionTest < ActiveSupport::TestCase
     assert_equal({:birthdate =>["Birth date is in the future"]}, pet.warnings.passive)
     assert_equal({:birthdate =>["Birth date is in the future"], :status =>["Pet is checking out"]}, pet.warnings.messages)
   end
+
+  test "passive method after active access" do
+    pet = Pet.create(:name => 'Ben', :birthdate => Date.today.next_month, :status => 'out')
+    assert pet.unsafe?
+
+    assert_empty pet.warnings.active[:birthdate]
+
+    assert_equal({:birthdate =>["Birth date is in the future"]}, pet.warnings.passive)
+    assert_equal({:birthdate =>["Birth date is in the future"], :status =>["Pet is checking out"]}, pet.warnings.messages)
+  end
   
   test "clear all warnings" do
     pet = Pet.create(:name => 'Ben', :birthdate => Date.today.next_month, :status => 'out')
