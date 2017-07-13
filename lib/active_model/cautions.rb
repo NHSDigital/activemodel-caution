@@ -136,7 +136,7 @@ module ActiveModel
   protected
 
     def run_cautions! #:nodoc:
-      _run_caution_callbacks
+      run_callbacks :caution
       warnings.empty?
     end
 
