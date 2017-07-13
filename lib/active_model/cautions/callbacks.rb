@@ -5,10 +5,7 @@ module ActiveModel
 
       included do
         include ActiveSupport::Callbacks
-        define_callbacks :cautions,
-                         terminator: deprecated_false_terminator,
-                         skip_after_callbacks_if_terminated: true,
-                         scope: [:kind, :name]
+        define_callbacks :cautions, :terminator => "result == false", :skip_after_callbacks_if_terminated => true, :scope => [:kind, :name]
       end
 
       module ClassMethods
@@ -17,9 +14,7 @@ module ActiveModel
           if options.is_a?(Hash) && options[:on]
             options[:if] = Array(options[:if])
             options[:on] = Array(options[:on])
-            options[:if].unshift ->(o) {
-              options[:on].include? o.caution_context
-            }
+            options[:if].unshift("#{options[:on]}.include? self.validation_context")
           end
           set_callback(:cautions, :before, *args, &block)
         end
@@ -30,9 +25,7 @@ module ActiveModel
           options[:if] = Array(options[:if])
           if options[:on]
             options[:on] = Array(options[:on])
-            options[:if].unshift ->(o) {
-              options[:on].include? o.caution_context
-            }
+            options[:if].unshift("#{options[:on]}.include? self.validation_context")
           end
           set_callback(:cautions, :after, *(args << options), &block)
         end
@@ -41,7 +34,7 @@ module ActiveModel
     protected
 
       def run_cautions!
-        _run_cautions_callbacks { super }
+        run_callbacks(:cautions) { super }
       end
     end
   end
