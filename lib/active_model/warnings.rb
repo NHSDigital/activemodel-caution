@@ -179,8 +179,10 @@ module ActiveModel
     end
 
     def passive
-      @messages.each_with_object({}) do |(attribute, message), passive|
-        passive[attribute] = message unless @active.key?(attribute)
+      @messages.each_with_object(apply_default_array({})) do |(attribute, messages), passive|
+        messages.each do |message|
+          passive[attribute] << message unless @active.key?(attribute) && @active[attribute].include?(message)
+        end
       end
     end
 
