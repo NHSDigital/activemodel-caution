@@ -5,7 +5,7 @@ module ActiveModel
 
       included do
         include ActiveSupport::Callbacks
-        define_callbacks :cautions, :terminator => "result == false", :skip_after_callbacks_if_terminated => true, :scope => [:kind, :name]
+        define_callbacks :cautions, :terminator => ->(_,result) { result == false }, :skip_after_callbacks_if_terminated => true, :scope => [:kind, :name]
       end
 
       module ClassMethods
