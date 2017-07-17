@@ -23,3 +23,5 @@ ActiveRecord::Schema.define(version: 0) do
     t.datetime 'updated_at'
   end
 end
+
+ActiveSupport.test_order = :random if ActiveSupport.respond_to?(:test_order=)
