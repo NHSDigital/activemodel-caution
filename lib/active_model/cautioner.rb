@@ -33,7 +33,7 @@ module ActiveModel
 
     def caution(record)
       attributes.each do |attribute|
-        value = record.read_attribute_for_cautioning(attribute)
+        value = record.read_attribute_for_cautioning(attribute, options)
         next if (value.nil? && options[:allow_nil]) || (value.blank? && options[:allow_blank])
         caution_each(record, attribute, value)
       end
