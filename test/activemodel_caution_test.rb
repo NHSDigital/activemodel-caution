@@ -224,4 +224,16 @@ class ActivemodelCautionTest < ActiveSupport::TestCase
     assert_equal({}, pet.warnings.active)
     assert_equal true, pet.warnings.empty?
   end
+
+  test 'using custom value for warning' do
+    person = Person.new
+
+    person.mood = 'null'
+    refute person.safe?
+    assert_equal(['is not included in the list'], person.warnings[:mood])
+
+    person.mood = 'mood'
+    person.safe?
+    assert person.warnings[:mood].blank?
+  end
 end
