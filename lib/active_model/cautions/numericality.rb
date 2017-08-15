@@ -38,7 +38,9 @@ module ActiveModel
           return
         end
 
-        unless raw_value.is_a?(Numeric)
+        if raw_value.is_a?(Numeric)
+          value = raw_value
+        else
           value = parse_raw_value_as_a_number(raw_value)
         end
 
@@ -72,6 +74,7 @@ module ActiveModel
       end
 
       def parse_raw_value_as_a_number(raw_value)
+        return raw_value.to_i if is_integer?(raw_value)
         Kernel.Float(raw_value) if raw_value !~ /\A0[xX]/
       end
 
