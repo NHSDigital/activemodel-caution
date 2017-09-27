@@ -32,7 +32,7 @@ module ActiveModel
         cautions(*(attributes << options))
       end
 
-    protected
+    private
 
       def _cautions_default_keys
         [:if, :unless, :on, :allow_blank, :allow_nil , :strict]

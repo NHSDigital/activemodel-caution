@@ -9,7 +9,7 @@ module ActiveModel
     end
 
     def initialize(options = {})
-      @options  = options.except(:class).freeze
+      @options = options.except(:class).freeze
     end
 
     def kind

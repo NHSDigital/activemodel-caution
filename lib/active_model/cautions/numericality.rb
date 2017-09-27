@@ -26,8 +26,6 @@ module ActiveModel
           raw_value = value
         end
 
-        return if options[:allow_nil] && raw_value.nil?
-
         unless is_number?(raw_value)
           record.warnings.add(attr_name, :not_a_number, filtered_options(raw_value))
           return
@@ -65,7 +63,7 @@ module ActiveModel
         end
       end
 
-    protected
+    private
 
       def is_number?(raw_value)
         !parse_raw_value_as_a_number(raw_value).nil?
@@ -98,8 +96,6 @@ module ActiveModel
           options[:only_integer]
         end
       end
-
-      private
 
       def record_attribute_changed_in_place?(record, attr_name)
         record.respond_to?(:attribute_changed_in_place?) &&

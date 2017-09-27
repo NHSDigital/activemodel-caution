@@ -1,4 +1,4 @@
-# Modified version of ActiveModel Validations (version 5.0.0)
+# Modified version of ActiveModel Validations (version 5.1.0)
 # to provide warning functionality to ActiveRecord model
 # in the same way as errors.
 #
@@ -31,7 +31,7 @@ module ActiveModel
       define_callbacks :caution, scope: :name
 
       class_attribute :_cautioners, instance_writer: false
-      self._cautioners = Hash.new { |h,k| h[k] = [] }
+      self._cautioners = Hash.new { |h, k| h[k] = [] }
     end
 
     module ClassMethods

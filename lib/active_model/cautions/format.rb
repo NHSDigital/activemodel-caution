@@ -7,7 +7,7 @@ module ActiveModel
           record_warning(record, attribute, :with, value) if value.to_s !~ regexp
         elsif options[:without]
           regexp = option_call(record, :without)
-          record_warning(record, attribute, :without, value) if value.to_s =~ regexp
+          record_warning(record, attribute, :without, value) if regexp.match?(value.to_s)
         end
       end
 
