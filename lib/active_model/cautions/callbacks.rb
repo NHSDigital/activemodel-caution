@@ -12,12 +12,16 @@ module ActiveModel
 
       module ClassMethods
         def before_cautions(*args, &block)
-          options = args.last
-          if options.is_a?(Hash) && options[:on]
-            options[:if] = Array(options[:if])
-            options[:on] = Array(options[:on])
-            options[:if].unshift("#{options[:on]}.include? self.validation_context")
+          options = args.extract_options!
+          options[:if] = Array(options[:if])
+
+          if options.key?(:on)
+            options[:if].unshift ->(o) {
+              !(Array(options[:on]) & Array(o.caution_context)).empty?
+            }
           end
+
+          args << options
           set_callback(:cautions, :before, *args, &block)
         end
 
@@ -25,11 +29,15 @@ module ActiveModel
           options = args.extract_options!
           options[:prepend] = true
           options[:if] = Array(options[:if])
-          if options[:on]
-            options[:on] = Array(options[:on])
-            options[:if].unshift("#{options[:on]}.include? self.validation_context")
+
+          if options.key?(:on)
+            options[:if].unshift ->(o) {
+              !(Array(options[:on]) & Array(o.caution_context)).empty?
+            }
           end
-          set_callback(:cautions, :after, *(args << options), &block)
+
+          args << options
+          set_callback(:cautions, :after, *args, &block)
         end
       end
 
