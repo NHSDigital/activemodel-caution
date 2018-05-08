@@ -13,35 +13,37 @@ module ActiveModel
       module ClassMethods
         def before_cautions(*args, &block)
           options = args.extract_options!
-          options[:if] = Array(options[:if])
 
           if options.key?(:on)
+            options = options.dup
+            options[:on] = Array(options[:on])
+            options[:if] = Array(options[:if])
             options[:if].unshift ->(o) {
-              !(Array(options[:on]) & Array(o.caution_context)).empty?
+              !(options[:on] & Array(o.caution_context)).empty?
             }
           end
 
-          args << options
           set_callback(:cautions, :before, *args, &block)
         end
 
         def after_cautions(*args, &block)
           options = args.extract_options!
+          options = options.dup
           options[:prepend] = true
-          options[:if] = Array(options[:if])
 
           if options.key?(:on)
+            options[:on] = Array(options[:on])
+            options[:if] = Array(options[:if])
             options[:if].unshift ->(o) {
-              !(Array(options[:on]) & Array(o.caution_context)).empty?
+              !(options[:on] & Array(o.caution_context)).empty?
             }
           end
 
-          args << options
           set_callback(:cautions, :after, *args, &block)
         end
       end
 
-    protected
+    private
 
       def run_cautions!
         run_callbacks(:cautions) { super }

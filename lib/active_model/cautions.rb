@@ -54,13 +54,13 @@ module ActiveModel
 
         if options.key?(:on)
           options = options.dup
+          options[:on] = Array(options[:on])
           options[:if] = Array(options[:if])
           options[:if].unshift ->(o) {
-            !(Array(options[:on]) & Array(o.caution_context)).empty?
+            !(options[:on] & Array(o.caution_context)).empty?
           }
         end
 
-        args << options
         set_callback(:caution, *args, &block)
       end
 
@@ -133,7 +133,7 @@ module ActiveModel
       end
     end
 
-  protected
+  private
 
     def run_cautions! #:nodoc:
       run_callbacks :caution

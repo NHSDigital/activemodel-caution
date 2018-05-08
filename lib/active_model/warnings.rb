@@ -69,11 +69,15 @@ module ActiveModel
     alias :count :size
 
     def values
-      messages.values
+      messages.select do |key, value|
+        !value.empty?
+      end.values
     end
 
     def keys
-      messages.keys
+      messages.select do |key, value|
+        !value.empty?
+      end.keys
     end
 
     def empty?
@@ -114,9 +118,13 @@ module ActiveModel
     end
 
     def added?(attribute, message = :invalid, options = {})
-      message = message.call if message.respond_to?(:call)
-      message = normalize_message(attribute, message, options)
-      self[attribute].include? message
+      if message.is_a? Symbol
+        self.details[attribute].map { |w| w[:warning] }.include?(message)
+      else
+        message = message.call if message.respond_to?(:call)
+        message = normalize_message(attribute, message, options)
+        self[attribute].include? message
+      end
     end
 
     def passive
@@ -162,15 +170,16 @@ module ActiveModel
       type = options.delete(:message) if options[:message].is_a?(Symbol)
 
       if @base.class.respond_to?(:i18n_scope)
+        i18n_scope = @base.class.i18n_scope.to_s
         defaults = @base.class.lookup_ancestors.map do |klass|
-          [ :"#{@base.class.i18n_scope}.warnings.models.#{klass.model_name.i18n_key}.attributes.#{attribute}.#{type}",
-            :"#{@base.class.i18n_scope}.warnings.models.#{klass.model_name.i18n_key}.#{type}" ]
+          [ :"#{i18n_scope}.warnings.models.#{klass.model_name.i18n_key}.attributes.#{attribute}.#{type}",
+            :"#{i18n_scope}.warnings.models.#{klass.model_name.i18n_key}.#{type}" ]
         end
+        defaults << :"#{i18n_scope}.warnings.messages.#{type}"
       else
         defaults = []
       end
 
-      defaults << :"#{@base.class.i18n_scope}.warnings.messages.#{type}" if @base.class.respond_to?(:i18n_scope)
       defaults << :"warnings.attributes.#{attribute}.#{type}"
       defaults << :"warnings.messages.#{type}"
 
@@ -183,7 +192,7 @@ module ActiveModel
 
       options = {
         default: defaults,
-        model: @base.class.model_name.human,
+        model: @base.model_name.human,
         attribute: @base.class.human_attribute_name(attribute),
         value: value,
         object: @base
@@ -198,6 +207,14 @@ module ActiveModel
 
     def marshal_load(array)
       @base, @messages, @details, @active = array
+      apply_default_array(@messages)
+      apply_default_array(@details)
+      apply_default_array(@active)
+    end
+
+    def init_with(coder) # :nodoc:
+      coder.map.each { |k, v| instance_variable_set(:"@#{k}", v) }
+      @details ||= {}
       apply_default_array(@messages)
       apply_default_array(@details)
       apply_default_array(@active)
