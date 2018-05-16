@@ -33,6 +33,12 @@ module ActiveModel
       @active   = other.active.dup
     end
 
+    def merge!(other)
+      @messages.merge!(other.messages) { |_, ary1, ary2| ary1 + ary2 }
+      @details.merge!(other.details) { |_, ary1, ary2| ary1 + ary2 }
+      @active.merge!(other.active) { |_, ary1, ary2| ary1 + ary2 }
+    end
+
     def clear
       messages.clear
       details.clear

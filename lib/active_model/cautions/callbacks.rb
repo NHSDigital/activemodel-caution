@@ -23,7 +23,7 @@ module ActiveModel
             }
           end
 
-          set_callback(:cautions, :before, *args, &block)
+          set_callback(:cautions, :before, *args, options, &block)
         end
 
         def after_cautions(*args, &block)
@@ -39,7 +39,7 @@ module ActiveModel
             }
           end
 
-          set_callback(:cautions, :after, *args, &block)
+          set_callback(:cautions, :after, *args, options, &block)
         end
       end
 

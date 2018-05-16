@@ -13,7 +13,7 @@ class ActivemodelCautionTest < ActiveSupport::TestCase
     assert_equal ["Contact number is less than 11 digits"], person.warnings[:base]
     assert_equal({}, person.warnings.active)
   end
-  
+
   test "active model with helper_method-generated warnings" do
     person = Person.new
     assert_equal true, person.safe?
@@ -50,6 +50,27 @@ class ActivemodelCautionTest < ActiveSupport::TestCase
     assert_equal true, person.safe?
   end
 
+  test 'active model with conditional warnigns' do
+    person = Person.new
+
+    person.safe?
+    assert_empty person.warnings[:likes_scooby_snacks]
+
+    person.name = 'Velma'
+    person.likes_scooby_snacks = true
+    person.safe?
+    refute_empty person.warnings[:likes_scooby_snacks]
+
+    person.name = 'Shaggy'
+    person.likes_scooby_snacks = nil
+    person.safe?
+    refute_empty person.warnings[:likes_scooby_snacks]
+
+    person.likes_scooby_snacks = true
+    person.safe?
+    assert_empty person.warnings[:likes_scooby_snacks]
+  end
+
   test "pet runs cautions callbacks" do
     pet = Pet.new
     assert_nil pet.greeting
@@ -69,7 +90,7 @@ class ActivemodelCautionTest < ActiveSupport::TestCase
       :description => 'Warren',
       :status => 'in'
     )
-    
+
     assert_equal 'Baileys', pet.name
     assert_equal true, pet.safe?
     assert_equal false, pet.unsafe?
@@ -97,7 +118,7 @@ class ActivemodelCautionTest < ActiveSupport::TestCase
     pet.safe?
     refute pet.warnings[:name].include?("can't contain numbers")
   end
-  
+
   test "pet with standard inactive warnings" do
     pet = Pet.create(:name => 'Ben', :birthdate => Date.today.next_month)
     assert_equal false, pet.safe?
@@ -109,27 +130,27 @@ class ActivemodelCautionTest < ActiveSupport::TestCase
     assert_equal({:birthdate => ["Birth date is in the future"]}, pet.warnings.messages)
     assert_equal({}, pet.warnings.active)
   end
-  
+
   test "pet with active warnings" do
     pet = Pet.create(:name => 'Ben', :status => 'out')
     assert_equal false, pet.safe?
     assert_equal({:status => ["Pet is checking out"]}, pet.warnings.messages)
     assert_equal({:status => ["Pet is checking out"]}, pet.warnings.active)
     assert_equal 1, pet.warnings.size
-    
+
     pet.warnings.add(:status, "Pet is still out", :active => true)
     assert_equal({:status =>["Pet is checking out", "Pet is still out"]}, pet.warnings.messages)
     assert_equal({:status =>["Pet is checking out", "Pet is still out"]}, pet.warnings.active)
     assert_equal 2, pet.warnings.size
   end
-  
+
   test "pet with both active and inactive warnings" do
     pet = Pet.create(:name => 'Ben', :birthdate => Date.today.next_month, :status => 'out')
     assert_equal false, pet.safe?
     assert_equal({:status =>["Pet is checking out"]}, pet.warnings.active)
     assert_equal({:birthdate =>["Birth date is in the future"], :status =>["Pet is checking out"]}, pet.warnings.messages)
     assert_equal 2, pet.warnings.size
-    
+
     assert_difference "pet.warnings.size", +1 do
       pet.warnings.add(:status, "Pet is still out", :active => true)
     end
@@ -213,11 +234,11 @@ class ActivemodelCautionTest < ActiveSupport::TestCase
     assert_equal({:birthdate =>["Birth date is in the future"]}, pet.warnings.passive)
     assert_equal({:birthdate =>["Birth date is in the future"], :status =>["Pet is checking out"]}, pet.warnings.messages)
   end
-  
+
   test "clear all warnings" do
     pet = Pet.create(:name => 'Ben', :birthdate => Date.today.next_month, :status => 'out')
     assert_equal false, pet.safe?
-    
+
     pet.warnings.clear
     assert_equal 0, pet.warnings.size
     assert_equal({}, pet.warnings.messages)

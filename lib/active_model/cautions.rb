@@ -30,8 +30,7 @@ module ActiveModel
       private :caution_context=
       define_callbacks :caution, scope: :name
 
-      class_attribute :_cautioners, instance_writer: false
-      self._cautioners = Hash.new { |h, k| h[k] = [] }
+      class_attribute :_cautioners, instance_writer: false, default: Hash.new { |h, k| h[k] = [] }
     end
 
     module ClassMethods
@@ -61,7 +60,7 @@ module ActiveModel
           }
         end
 
-        set_callback(:caution, *args, &block)
+        set_callback(:caution, *args, options, &block)
       end
 
       def cautioners
