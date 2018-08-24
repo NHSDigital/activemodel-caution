@@ -125,7 +125,7 @@ module ActiveModel
 
     def added?(attribute, message = :invalid, options = {})
       if message.is_a? Symbol
-        self.details[attribute].map { |w| w[:warning] }.include?(message)
+        self.details[attribute.to_sym].map { |w| w[:warning] }.include?(message)
       else
         message = message.call if message.respond_to?(:call)
         message = normalize_message(attribute, message, options)
