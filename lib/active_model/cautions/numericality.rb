@@ -19,8 +19,17 @@ module ActiveModel
       def caution_each(record, attr_name, value)
         came_from_user = :"#{attr_name}_came_from_user?"
 
-        if record.respond_to?(came_from_user) && record.public_send(came_from_user)
-          raw_value = record.read_attribute_before_type_cast(attr_name)
+        if record.respond_to?(came_from_user)
+          if record.public_send(came_from_user)
+            raw_value = record.read_attribute_before_type_cast(attr_name)
+          elsif record.respond_to?(:read_attribute)
+            raw_value = record.read_attribute(attr_name)
+          end
+        else
+          before_type_cast = :"#{attr_name}_before_type_cast"
+          if record.respond_to?(before_type_cast)
+            raw_value = record.public_send(before_type_cast)
+          end
         end
         raw_value ||= value
 
@@ -75,11 +84,15 @@ module ActiveModel
 
       def parse_raw_value_as_a_number(raw_value)
         return raw_value.to_i if is_integer?(raw_value)
-        Kernel.Float(raw_value) if raw_value !~ /\A0[xX]/
+        Kernel.Float(raw_value) unless is_hexadecimal_literal?(raw_value)
       end
 
       def is_integer?(raw_value)
         /\A[+-]?\d+\z/ === raw_value.to_s
+      end
+
+      def is_hexadecimal_literal?(raw_value)
+        /\A0[xX]/ === raw_value
       end
 
       def filtered_options(value)
