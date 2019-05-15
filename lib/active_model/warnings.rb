@@ -10,6 +10,11 @@ module ActiveModel
     CALLBACKS_OPTIONS = [:if, :unless, :on, :allow_nil, :allow_blank, :strict]
     MESSAGE_OPTIONS = [:message]
 
+    class << self
+      attr_accessor :i18n_customize_full_message # :nodoc:
+    end
+    self.i18n_customize_full_message = false
+
     attr_reader :messages, :details
     attr_reader :active
 
@@ -37,6 +42,12 @@ module ActiveModel
       @messages.merge!(other.messages) { |_, ary1, ary2| ary1 + ary2 }
       @details.merge!(other.details) { |_, ary1, ary2| ary1 + ary2 }
       @active.merge!(other.active) { |_, ary1, ary2| ary1 + ary2 }
+    end
+
+    def slice!(*keys)
+      keys = keys.map(&:to_sym)
+      @details.slice!(*keys)
+      @messages.slice!(*keys)
     end
 
     def clear
@@ -133,6 +144,16 @@ module ActiveModel
       end
     end
 
+    def of_kind?(attribute, message = :invalid)
+      message = message.call if message.respond_to?(:call)
+
+      if message.is_a? Symbol
+        details[attribute.to_sym].map { |c| c[:warning] }.include? message
+      else
+        self[attribute].include? message
+      end
+    end
+
     def passive
       @messages.each_with_object(apply_default_array({})) do |(attribute, messages), passive|
         attribute = attribute.to_sym
@@ -164,16 +185,57 @@ module ActiveModel
 
     def full_message(attribute, message)
       return message if attribute == :base
-      attr_name = attribute.to_s.tr('.', '_').humanize
+      attribute = attribute.to_s
+
+      if self.class.i18n_customize_full_message && @base.class.respond_to?(:i18n_scope)
+        attribute = attribute.remove(/\[\d\]/)
+        parts = attribute.split(".")
+        attribute_name = parts.pop
+        namespace = parts.join("/") unless parts.empty?
+        attributes_scope = "#{@base.class.i18n_scope}.warnings.models"
+
+        if namespace
+          defaults = @base.class.lookup_ancestors.map do |klass|
+            [
+              :"#{attributes_scope}.#{klass.model_name.i18n_key}/#{namespace}.attributes.#{attribute_name}.format",
+              :"#{attributes_scope}.#{klass.model_name.i18n_key}/#{namespace}.format",
+            ]
+          end
+        else
+          defaults = @base.class.lookup_ancestors.map do |klass|
+            [
+              :"#{attributes_scope}.#{klass.model_name.i18n_key}.attributes.#{attribute_name}.format",
+              :"#{attributes_scope}.#{klass.model_name.i18n_key}.format",
+            ]
+          end
+        end
+
+        defaults.flatten!
+      else
+        defaults = []
+      end
+
+      defaults << :"warnings.format"
+      defaults << "%{attribute} %{message}"
+
+      attr_name = attribute.tr(".", "_").humanize
       attr_name = @base.class.human_attribute_name(attribute, default: attr_name)
-      I18n.t(:"warnings.format",
-        default:  "%{attribute} %{message}",
+      I18n.t(defaults.shift,
+        default:   defaults,
         attribute: attr_name,
         message:   message)
     end
 
     def generate_message(attribute, type = :invalid, options = {})
       type = options.delete(:message) if options[:message].is_a?(Symbol)
+      value = (attribute != :base ? @base.send(:read_attribute_for_cautioning, attribute) : nil)
+
+      options = {
+        model: @base.model_name.human,
+        attribute: @base.class.human_attribute_name(attribute),
+        value: value,
+        object: @base
+      }.merge!(options)
 
       if @base.class.respond_to?(:i18n_scope)
         i18n_scope = @base.class.i18n_scope.to_s
@@ -182,6 +244,11 @@ module ActiveModel
             :"#{i18n_scope}.warnings.models.#{klass.model_name.i18n_key}.#{type}" ]
         end
         defaults << :"#{i18n_scope}.warnings.messages.#{type}"
+
+        catch(:exception) do
+          translation = I18n.translate(defaults.first, options.merge(default: defaults.drop(1), throw: true))
+          return translation unless translation.nil?
+        end unless options[:message]
       else
         defaults = []
       end
@@ -194,15 +261,7 @@ module ActiveModel
 
       key = defaults.shift
       defaults = options.delete(:message) if options[:message]
-      value = (attribute != :base ? @base.send(:read_attribute_for_cautioning, attribute) : nil)
-
-      options = {
-        default: defaults,
-        model: @base.model_name.human,
-        attribute: @base.class.human_attribute_name(attribute),
-        value: value,
-        object: @base
-      }.merge!(options)
+      options[:default] = defaults
 
       I18n.translate(key, options)
     end

@@ -17,7 +17,7 @@ module ActiveModel
           key = "#{key.to_s.camelize}Cautioner"
 
           begin
-            cautioner = key.include?('::'.freeze) ? key.constantize : const_get(key)
+            cautioner = key.include?('::') ? key.constantize : const_get(key)
           rescue NameError
             raise ArgumentError, "Unknown cautioner: '#{key}'"
           end
