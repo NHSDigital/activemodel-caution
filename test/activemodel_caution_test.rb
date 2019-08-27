@@ -208,6 +208,16 @@ class ActivemodelCautionTest < ActiveSupport::TestCase
     assert pet.invalid? # Should still be invalid
   end
 
+  test 'active warnings should not be raised as validations when avoiding them' do
+    pet = Pet.new(name: 'Ben', birthdate: Date.today.next_month, status: 'out')
+    assert pet.unsafe?
+    assert pet.warnings.active.any?
+
+    assert pet.valid_ignoring_unconfirmed_active_warnings?
+    refute pet.errors[:base].any?
+    refute pet.warnings_need_confirmation?
+  end
+
   test "active_messages should print full messages" do
     pet = Pet.create(:name => 'Ben', :birthdate => Date.today.next_month, :status => 'out')
     pet.safe?
