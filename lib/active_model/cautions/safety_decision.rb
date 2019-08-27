@@ -16,34 +16,36 @@ module ActiveModel
         super && no_unconfirmed_active_cautions?
       end
 
+      def valid_ignoring_unconfirmed_active_warnings?(*args)
+        without_checking_cautions { valid?(*args) }
+      end
+
       # Add a validation failure if the record
       # has active warnings that the user has not
       # given explicit permission for:
       def no_unconfirmed_active_cautions?
-        if confirmed_safe?
-          true
-        else
-          # Preserve warnings added by validations:
-          cached_warnings = warnings.to_hash
+        return true if skip_active_caution_check? || confirmed_safe?
 
-          # Run the cautions as part of the validations,
-          # but only if the user has not already decided:
-          safe?
+        # Preserve warnings added by validations:
+        cached_warnings = warnings.to_hash
 
-          # Re-apply any cached warnings:
-          cached_warnings.each do |attr, messages|
-            messages.each do |msg|
-              warnings.add(attr, msg) unless warnings[attr].include?(msg)
-            end
+        # Run the cautions as part of the validations,
+        # but only if the user has not already decided:
+        safe?
+
+        # Re-apply any cached warnings:
+        cached_warnings.each do |attr, messages|
+          messages.each do |msg|
+            warnings.add(attr, msg) unless warnings[attr].include?(msg)
           end
-
-          if warnings.active.any?
-            warnings_need_confirmation!
-            errors.add(:base, 'The following warnings need confirmation: ' + warnings.active_messages.to_sentence)
-          end
-
-          !warnings_need_confirmation?
         end
+
+        if warnings.active.any?
+          warnings_need_confirmation!
+          errors.add(:base, 'The following warnings need confirmation: ' + warnings.active_messages.to_sentence)
+        end
+
+        !warnings_need_confirmation?
       end
 
       # Did validations fail because the user
@@ -71,6 +73,21 @@ module ActiveModel
       # The result of the user's decision:
       def confirmed_safe?
         active_warnings_confirm_decision
+      end
+
+      private
+
+      def skip_active_caution_check?
+        @skip_active_caution_check ||= false
+      end
+
+      def without_checking_cautions
+        old = skip_active_caution_check?
+        @skip_active_caution_check = true
+
+        yield
+      ensure
+        @skip_active_caution_check = old
       end
 
     end
