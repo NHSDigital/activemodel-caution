@@ -1,6 +1,6 @@
 module ActiveModel
   module Caution
-    RAILS_VERSION = '5.2.4.2'.freeze
+    RAILS_VERSION = '5.2.4.3'.freeze
     GEM_REVISION  = '0'.freeze
 
     # Gem version:
