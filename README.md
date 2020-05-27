@@ -93,6 +93,18 @@ The object must then be "confirmed as safe" to be valid:
 
 ## Development
 
+### Synchronising updates
+
+This repository aims to mirror the validations of `ActiveModel` / `ActiveRecord` in both functionality and implementation.
+As such, releases are tagged to mirror Rails' own. The file `version.rb` defines both `RAILS_VERSION` and `GEM_VERSION` -
+the latter of which can be use to release intermediate updates should they be necessary.
+
+Changes needing mirroring can be found with e.g. the below, although it's wise to review the full changelogs in detail too.
+
+```
+rails$ git diff v6.0.0.rc1..v6.0.0.rc2 --stat -- {activemodel/lib/active_model,activerecord/lib/active_record}/{error,validat}*
+```
+
 ### Contributing
 
 1. Fork it ( https://github.com/PublicHealthEngland/activemodel-caution/fork )
