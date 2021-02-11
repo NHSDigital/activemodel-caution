@@ -1,4 +1,4 @@
-# Warnings for ActiveModel [![Build Status](https://travis-ci.org/PublicHealthEngland/activemodel-caution.svg?branch=master)](https://travis-ci.org/PublicHealthEngland/activemodel-caution)
+# Warnings for ActiveModel [![Build Status](https://github.com/publichealthengland/activemodel-caution/workflows/Test/badge.svg)](https://github.com/publichealthengland/activemodel-caution/actions?query=workflow%3Atest)
 
 The activemodel-caution gem mirrors ActiveModel's validation framework to provide non-blocking warnings.
 It is possible to specify a warning as 'active', in which case it must be confirmed (otherwise a
