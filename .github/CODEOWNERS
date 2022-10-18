@@ -1,2 +1,2 @@
 # Admins should have oversight of the version:
-lib/active_model/caution/version.rb      @publichealthengland/ndr-admins
+lib/active_model/caution/version.rb      @NHSDigital/ndrs-it-admins @publichealthengland/ndr-admins
