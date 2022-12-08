@@ -1,4 +1,4 @@
-# Warnings for ActiveModel [![Build Status](https://github.com/publichealthengland/activemodel-caution/workflows/Test/badge.svg)](https://github.com/publichealthengland/activemodel-caution/actions?query=workflow%3Atest)
+# Warnings for ActiveModel [![Build Status](https://github.com/NHSDigital/activemodel-caution/workflows/Test/badge.svg)](https://github.com/NHSDigital/activemodel-caution/actions?query=workflow%3Atest)
 
 The activemodel-caution gem mirrors ActiveModel's validation framework to provide non-blocking warnings.
 It is possible to specify a warning as 'active', in which case it must be confirmed (otherwise a
@@ -13,7 +13,7 @@ The codebase is heavily based on the ActiveModel's Validation framework.
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'activemodel-caution', :git => 'https://github.com/PublicHealthEngland/activemodel-caution.git'
+gem 'activemodel-caution', :git => 'https://github.com/NHSDigital/activemodel-caution.git'
 ```
 
 And then execute:
@@ -107,7 +107,7 @@ rails$ git diff v6.0.0.rc1..v6.0.0.rc2 --stat -- {activemodel/lib/active_model,a
 
 ### Contributing
 
-1. Fork it ( https://github.com/PublicHealthEngland/activemodel-caution/fork )
+1. Fork it ( https://github.com/NHSDigital/activemodel-caution/fork )
 2. Create your feature branch (git checkout -b my-new-feature)
 3. Commit your changes (git commit -am 'Add some feature')
 4. Push to the branch (git push origin my-new-feature)
