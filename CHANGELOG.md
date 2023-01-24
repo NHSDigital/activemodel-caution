@@ -1,5 +1,6 @@
 ## [Unreleased]
-* No unreleased changes
+### Fixed
+* Bump rails to 6.1.7.1
 
 ## 6.1.7.0 / 2022-09-29
 ### Fixed
