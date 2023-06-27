@@ -1,6 +1,6 @@
 ## [Unreleased]
 ### Fixed
-* Bump rails to 6.1.7.3
+* Bump rails to 6.1.7.4
 
 ## 6.1.7.1.0 / 2023-01-24
 ### Fixed
