@@ -1,5 +1,6 @@
 ## [Unreleased]
-* No unreleased changes
+### Fixed
+* Support patch releases of Rails after the current minor revision
 
 ## 6.1.7.0 / 2022-09-29
 ### Fixed
