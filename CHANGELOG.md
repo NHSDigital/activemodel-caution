@@ -1,5 +1,5 @@
 ## [Unreleased]
-* No unreleased changes
+* Test against ruby 3.2, drop support for ruby 2.7
 
 ## 6.1.7.6 / 2023-08-30
 ### Fixed
