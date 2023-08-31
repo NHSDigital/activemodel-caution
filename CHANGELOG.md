@@ -1,5 +1,9 @@
 ## [Unreleased]
-* No unreleased changes
+* Test against ruby 3.2, drop support for ruby 2.7
+
+## 6.1.7.6 / 2023-08-30
+### Fixed
+* Support patch releases of Rails after the current minor revision 6.1.7.0
 
 ## 6.1.7.0 / 2022-09-29
 ### Fixed
