@@ -19,13 +19,19 @@ Gem::Specification.new do |spec|
   spec.executables   = spec.files.grep(%r{^bin/}) { |f| File.basename(f) }
   spec.require_paths = ['lib']
 
-  spec.required_ruby_version = '>= 2.7'
+  spec.required_ruby_version = '>= 3.0'
 
-  spec.add_dependency('actionpack',    ActiveModel::Caution::RAILS_VERSION)
-  spec.add_dependency('activemodel',   ActiveModel::Caution::RAILS_VERSION)
-  spec.add_dependency('activerecord',  ActiveModel::Caution::RAILS_VERSION)
-  spec.add_dependency('activesupport', ActiveModel::Caution::RAILS_VERSION)
-  spec.add_dependency('railties',      ActiveModel::Caution::RAILS_VERSION)
+  # Allow any point release over the existing Rails version, so
+  # ActiveModel::Caution::RAILS_VERSION -> rails_dependency
+  # '6.1'                               -> '~> 6.1.0.0'
+  # '6.1.7'                             -> '~> 6.1.7.0'
+  # '6.1.7.4'                           -> '~> 6.1.7.4'
+  rails_dependency = "~> #{ActiveModel::Caution::RAILS_VERSION}.0.0.0".split('.', 5)[0..3].join('.')
+  spec.add_dependency('actionpack',    rails_dependency)
+  spec.add_dependency('activemodel',   rails_dependency)
+  spec.add_dependency('activerecord',  rails_dependency)
+  spec.add_dependency('activesupport', rails_dependency)
+  spec.add_dependency('railties',      rails_dependency)
 
   spec.add_development_dependency 'bundler'
   spec.add_development_dependency 'ndr_dev_support', '>= 6.0', '< 8.0'
