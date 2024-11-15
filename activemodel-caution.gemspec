@@ -33,9 +33,13 @@ Gem::Specification.new do |spec|
   spec.add_dependency('activesupport', rails_dependency)
   spec.add_dependency('railties',      rails_dependency)
 
+  # We list development dependencies for all Rails versions here.
+  # Rails version-specific dependencies can go in the relevant Gemfile.
+  # rubocop:disable Gemspec/DevelopmentDependencies
   spec.add_development_dependency 'bundler'
   spec.add_development_dependency 'minitest'
   spec.add_development_dependency 'ndr_dev_support', '>= 6.0', '< 8.0'
   spec.add_development_dependency 'rake'
   spec.add_development_dependency 'sqlite3', '~> 1.4', '>= 1.4.0'
+  # rubocop:enable Gemspec/DevelopmentDependencies
 end
