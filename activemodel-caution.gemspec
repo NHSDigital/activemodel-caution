@@ -34,6 +34,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency('railties',      rails_dependency)
 
   spec.add_development_dependency 'bundler'
+  spec.add_development_dependency 'minitest'
   spec.add_development_dependency 'ndr_dev_support', '>= 6.0', '< 8.0'
   spec.add_development_dependency 'rake'
   spec.add_development_dependency 'sqlite3', '~> 1.4', '>= 1.4.0'
