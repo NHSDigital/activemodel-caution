@@ -1,0 +1,134 @@
+---
+file safety:
+  ".github/CODEOWNERS":
+    comments:
+    reviewed_by: brian.shand
+    safe_revision: d427bd0ab9302c9e275529b7e49e6c49b10757c4
+  ".github/workflows/lint.yml":
+    comments:
+    reviewed_by: brian.shand
+    safe_revision: 1a2dfcdba02ba189dd2838dbc2375df419815c28
+  ".github/workflows/test.yml":
+    comments:
+    reviewed_by: brian.shand
+    safe_revision: b0428cf00c1de41a4e17dcee4dbbc609309ec54e
+  ".gitignore":
+    comments:
+    reviewed_by: brian.shand
+    safe_revision: 1f7b7b0e0ae76dc375ffe920de15355a8cad2954
+  ".rubocop.yml":
+    comments:
+    reviewed_by: brian.shand
+    safe_revision: 277a8bb4384839b5eccbc548a578e34ee580783c
+  CHANGELOG.md:
+    comments:
+    reviewed_by: brian.shand
+    safe_revision: b0428cf00c1de41a4e17dcee4dbbc609309ec54e
+  CODE_OF_CONDUCT.md:
+    comments:
+    reviewed_by: brian.shand
+    safe_revision: 96cff788d22647516ac2e1089866782fcd073b77
+  Gemfile:
+    comments:
+    reviewed_by: brian.shand
+    safe_revision: 21a8f5b03822f866e6674ba1fd96d348ac12e545
+  MIT-LICENCE:
+    comments:
+    reviewed_by: brian.shand
+    safe_revision: 3bc1fc156ce4fd839ee6f60813a110c808a78f37
+  README.md:
+    comments:
+    reviewed_by: brian.shand
+    safe_revision: 63292320abf699efa00e6fe861aa697c9eb1f92c
+  Rakefile:
+    comments:
+    reviewed_by: brian.shand
+    safe_revision: fa31b25843398d902bbbde52a8c12aca8805fb70
+  activemodel-caution.gemspec:
+    comments:
+    reviewed_by: brian.shand
+    safe_revision: b0428cf00c1de41a4e17dcee4dbbc609309ec54e
+  lib/active_model/caution/included.rb:
+    comments:
+    reviewed_by: brian.shand
+    safe_revision: 369b0338c9ce2cf5b665c4639c3bb8aa8e1d9fa6
+  lib/active_model/caution/railtie.rb:
+    comments:
+    reviewed_by: brian.shand
+    safe_revision: 3b7e29d9a58fa381567d767be53661557bf6a433
+  lib/active_model/caution/version.rb:
+    comments:
+    reviewed_by: brian.shand
+    safe_revision: f44b3f17a62973e54faf340ba35f3d7db7ae40a7
+  lib/active_model/cautioner.rb:
+    comments:
+    reviewed_by: brian.shand
+    safe_revision: eec02d0491c961f5743f4703f76078a0bb8c029d
+  lib/active_model/cautions.rb:
+    comments:
+    reviewed_by: brian.shand
+    safe_revision: bf196792b23c02551408f0dddcbb7f284fbb8a8f
+  lib/active_model/cautions/callbacks.rb:
+    comments:
+    reviewed_by: brian.shand
+    safe_revision: e22872dcabd4df399c989734b5c8cc90e6c5579a
+  lib/active_model/cautions/cautions.rb:
+    comments:
+    reviewed_by: brian.shand
+    safe_revision: bf196792b23c02551408f0dddcbb7f284fbb8a8f
+  lib/active_model/cautions/format.rb:
+    comments:
+    reviewed_by: brian.shand
+    safe_revision: e820ee5555906530a469ac6a55c05cefebd65d16
+  lib/active_model/cautions/helper_methods.rb:
+    comments:
+    reviewed_by: brian.shand
+    safe_revision: 369b0338c9ce2cf5b665c4639c3bb8aa8e1d9fa6
+  lib/active_model/cautions/inclusion.rb:
+    comments:
+    reviewed_by: brian.shand
+    safe_revision: 369b0338c9ce2cf5b665c4639c3bb8aa8e1d9fa6
+  lib/active_model/cautions/numericality.rb:
+    comments:
+    reviewed_by: brian.shand
+    safe_revision: e820ee5555906530a469ac6a55c05cefebd65d16
+  lib/active_model/cautions/presence.rb:
+    comments:
+    reviewed_by: brian.shand
+    safe_revision: 369b0338c9ce2cf5b665c4639c3bb8aa8e1d9fa6
+  lib/active_model/cautions/safety_decision.rb:
+    comments:
+    reviewed_by: brian.shand
+    safe_revision: dce30903678dff984ec63388a4112a8aba6002ea
+  lib/active_model/cautions/with.rb:
+    comments:
+    reviewed_by: brian.shand
+    safe_revision: 369b0338c9ce2cf5b665c4639c3bb8aa8e1d9fa6
+  lib/active_model/locale/en.yml:
+    comments:
+    reviewed_by: brian.shand
+    safe_revision: 369b0338c9ce2cf5b665c4639c3bb8aa8e1d9fa6
+  lib/active_model/warnings.rb:
+    comments:
+    reviewed_by: brian.shand
+    safe_revision: e820ee5555906530a469ac6a55c05cefebd65d16
+  lib/activemodel-caution.rb:
+    comments:
+    reviewed_by: brian.shand
+    safe_revision: 3b7e29d9a58fa381567d767be53661557bf6a433
+  test/activemodel_caution_test.rb:
+    comments:
+    reviewed_by: brian.shand
+    safe_revision: dce30903678dff984ec63388a4112a8aba6002ea
+  test/models/person.rb:
+    comments:
+    reviewed_by: brian.shand
+    safe_revision: e22872dcabd4df399c989734b5c8cc90e6c5579a
+  test/models/pet.rb:
+    comments:
+    reviewed_by: brian.shand
+    safe_revision: 1e18c210045380c4ecd495a42a994637a0030a83
+  test/test_helper.rb:
+    comments:
+    reviewed_by: brian.shand
+    safe_revision: b0428cf00c1de41a4e17dcee4dbbc609309ec54e
