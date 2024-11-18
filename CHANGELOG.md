@@ -1,5 +1,6 @@
 ## [Unreleased]
-* No unreleased changes
+### Fixed
+* Use minitest for testing
 
 ## 7.0.8.0 / 2023-12-07
 ### Fixed

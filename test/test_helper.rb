@@ -3,7 +3,8 @@ require 'rubygems'
 require 'rails'
 require 'active_record'
 
-require 'rails/test_help'
+require 'minitest/autorun'
+require 'minitest/unit'
 
 require File.dirname(__FILE__) + '/../lib/activemodel-caution'
 
