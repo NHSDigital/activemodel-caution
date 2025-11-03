@@ -1,5 +1,6 @@
 ## [Unreleased]
-* no unreleased changes *
+### Fixed
+* Drop support for ruby 3.1
 
 ## 7.2.2 / 2025-09-21
 ### Fixed
