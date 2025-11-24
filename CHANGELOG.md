@@ -1,6 +1,10 @@
 ## [Unreleased]
+* no unreleased changes *
+
+## 7.2.3 / 2025-11-24
 ### Fixed
 * Drop support for ruby 3.1
+* Support patch releases of Rails after the current minor revision 7.2.3.0
 
 ## 7.2.2 / 2025-09-21
 ### Fixed
